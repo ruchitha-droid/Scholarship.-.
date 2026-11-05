@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Scholarship Hub | Scholarship Management</title>
+<style>
+:root{--navy:#172554;--blue:#3157c8;--sky:#eef3ff;--ink:#172033;--muted:#68738a;--line:#e5e9f2;--green:#13845b;--amber:#a96808;--red:#b83b4b;--white:#fff}
+*{box-sizing:border-box}body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:#f6f8fc;color:var(--ink)}
+header{background:linear-gradient(115deg,#172554,#3157c8);color:white;padding:25px max(5vw,22px) 28px}
+.top{display:flex;align-items:center;justify-content:space-between;gap:16px;max-width:1200px;margin:auto}.brand{font-size:21px;font-weight:800;letter-spacing:.2px}.brand span{color:#bcd0ff}.tag{font-size:13px;color:#dce6ff}.hero{max-width:1200px;margin:30px auto 0}.hero h1{font-size:clamp(27px,4vw,40px);margin:0 0 8px}.hero p{margin:0;color:#e0e8ff;max-width:650px;line-height:1.6}
+main{max-width:1200px;margin:26px auto;padding:0 22px 50px}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:15px;margin-bottom:23px}.stat,.panel,.scholar-card{background:white;border:1px solid var(--line);border-radius:16px;box-shadow:0 5px 18px #1b2c5510}.stat{padding:18px 20px}.stat small{color:var(--muted);font-weight:600}.stat strong{display:block;font-size:29px;margin-top:7px;color:var(--navy)}
+.layout{display:grid;grid-template-columns:1.55fr .9fr;gap:20px;align-items:start}.panel{padding:21px}.panel h2{font-size:19px;margin:0 0 5px}.sub{font-size:13px;color:var(--muted);margin:0 0 17px}.toolbar{display:flex;gap:10px;flex-wrap:wrap;margin:16px 0}.toolbar input,.toolbar select,input,select,textarea{font:inherit}.toolbar input,.toolbar select,.field input,.field select,.field textarea{border:1px solid #dce2ee;border-radius:9px;padding:10px 11px;background:white;min-width:0}.toolbar input{flex:1;min-width:180px}.toolbar select{min-width:145px}
+.cards{display:grid;gap:12px}.scholar-card{padding:16px;box-shadow:none}.card-top{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}.scholar-card h3{font-size:16px;margin:0 0 5px}.provider{font-size:12px;color:var(--muted)}.amount{font-weight:800;color:var(--blue);white-space:nowrap}.details{display:flex;gap:8px 15px;flex-wrap:wrap;color:#536078;font-size:12px;margin:13px 0}.pill{font-size:11px;font-weight:700;padding:5px 9px;border-radius:20px;background:#edf2ff;color:#3157c8}.pill.green{background:#e8f7f0;color:var(--green)}.pill.amber{background:#fff4df;color:var(--amber)}.actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.btn{border:0;border-radius:9px;padding:10px 13px;font-weight:700;cursor:pointer;background:var(--blue);color:white}.btn:hover{filter:brightness(.95)}.btn.secondary{background:#edf1fb;color:#263c80}.btn.danger{background:#fff0f1;color:var(--red)}.btn.small{font-size:12px;padding:7px 10px}.empty{padding:25px;text-align:center;color:var(--muted);border:1px dashed #cbd3e3;border-radius:12px}
+form{display:grid;gap:12px}.field{display:grid;gap:6px}.field label{font-size:12px;font-weight:700;color:#4a556d}.field input,.field select,.field textarea{width:100%}.field textarea{min-height:68px;resize:vertical}.form-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}.notice{font-size:12px;line-height:1.5;color:var(--muted);background:#f3f6ff;border-radius:10px;padding:11px;margin-top:14px}.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#172554;color:white;padding:11px 16px;border-radius:10px;box-shadow:0 8px 25px #0002;display:none;z-index:5;font-size:13px}
+footer{text-align:center;color:#8a93a6;font-size:12px;padding:20px}
+@media(max-width:800px){.layout{grid-template-columns:1fr}.stats{gap:9px}.stat{padding:14px}.stat strong{font-size:24px}}
+@media(max-width:480px){.stats{grid-template-columns:1fr}.top{align-items:flex-start;flex-direction:column}.card-top{flex-direction:column}.amount{font-size:17px}}
+</style>
+</head>
+<body>
+<header>
+  <div class="top"><div class="brand">🎓 Scholarship<span>Hub</span></div><div class="tag">Discover · Apply · Track</div></div>
+  <div class="hero"><h1>Scholarship Management Portal</h1><p>Find scholarship opportunities, keep track of applications, and manage important deadlines — all in one place.</p></div>
+</header>
+<main>
+  <section class="stats" aria-label="Application summary">
+    <div class="stat"><small>Available scholarships</small><strong id="availableCount">0</strong></div>
+    <div class="stat"><small>My applications</small><strong id="applicationCount">0</strong></div>
+    <div class="stat"><small>Approved</small><strong id="approvedCount">0</strong></div>
+  </section>
+  <div class="layout">
+    <section class="panel">
+      <h2>Scholarship opportunities</h2><p class="sub">Search and filter the sample opportunities below.</p>
+      <div class="toolbar">
+        <input id="search" type="search" placeholder="Search by name, provider or course..." aria-label="Search scholarships">
+        <select id="category" aria-label="Filter by category"><option value="">All categories</option><option>Merit-based</option><option>Need-based</option><option>Technical</option><option>Community</option></select>
+      </div>
+      <div class="cards" id="scholarshipList"></div>
+    </section>
+    <aside class="panel">
+      <h2>Add a scholarship</h2><p class="sub">Add an opportunity to your local portal.</p>
+      <form id="scholarshipForm">
+        <div class="field"><label for="name">Scholarship name *</label><input id="name" required maxlength="80" placeholder="e.g. Future Leaders Award"></div>
+        <div class="field"><label for="provider">Provider / organization *</label><input id="provider" required maxlength="80" placeholder="Organization name"></div>
+        <div class="field"><label for="amount">Award amount (₹) *</label><input id="amount" type="number" min="1" required placeholder="25000"></div>
+        <div class="field"><label for="categoryInput">Category *</label><select id="categoryInput" required><option value="">Choose category</option><option>Merit-based</option><option>Need-based</option><option>Technical</option><option>Community</option></select></div>
+        <div class="field"><label for="deadline">Application deadline *</label><input id="deadline" type="date" required></div>
+        <div class="field"><label for="eligibility">Eligibility / notes</label><textarea id="eligibility" maxlength="220" placeholder="Add a short eligibility note"></textarea></div>
+        <div class="form-actions"><button class="btn" type="submit">＋ Add scholarship</button><button class="btn secondary" type="reset">Clear</button></div>
+      </form>
+      <div class="notice">Demo project: information is saved in this browser using local storage. Sample opportunities are illustrative; verify eligibility and deadlines with the official provider before applying. Do not enter sensitive personal or bank details.</div>
+    </aside>
+  </div>
+  <section class="panel" style="margin-top:20px">
+    <h2>My application tracker</h2><p class="sub">Update the status of scholarships you have applied for.</p>
+    <div id="applicationList" class="cards"></div>
+  </section>
+</main>
+<footer>ScholarshipHub · Student scholarship management demo</footer>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script>
+const initialScholarships = [
+ {id:1,name:"National Merit Scholarship (Sample)",provider:"Student Support Foundation",amount:30000,category:"Merit-based",deadline:"2027-01-31",eligibility:"For students with a strong academic record."},
+ {id:2,name:"Higher Education Assistance (Sample)",provider:"Education Access Trust",amount:20000,category:"Need-based",deadline:"2027-02-15",eligibility:"For students who meet the provider's financial-need criteria."},
+ {id:3,name:"Future Technologists Award (Sample)",provider:"Technology Learning Initiative",amount:25000,category:"Technical",deadline:"2027-03-10",eligibility:"For students pursuing engineering or technology studies."}
+];
+const read=(key,fallback)=>{try{const v=JSON.parse(localStorage.getItem(key));return v??fallback}catch{return fallback}};
+let scholarships=read("sh_scholarships",initialScholarships);
+let applications=read("sh_applications",[]);
+const money=n=>"₹"+Number(n).toLocaleString("en-IN");
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+function save(){localStorage.setItem("sh_scholarships",JSON.stringify(scholarships));localStorage.setItem("sh_applications",JSON.stringify(applications));}
+function toast(msg){const t=document.getElementById("toast");t.textContent=msg;t.style.display="block";clearTimeout(toast.timer);toast.timer=setTimeout(()=>t.style.display="none",2400)}
+function render(){
+ const q=document.getElementById("search").value.toLowerCase(),cat=document.getElementById("category").value;
+ const filtered=scholarships.filter(s=>(!cat||s.category===cat)&&[s.name,s.provider,s.eligibility,s.category].join(" ").toLowerCase().includes(q));
+ document.getElementById("availableCount").textContent=scholarships.length;
+ document.getElementById("applicationCount").textContent=applications.length;
+ document.getElementById("approvedCount").textContent=applications.filter(a=>a.status==="Approved").length;
+ document.getElementById("scholarshipList").innerHTML=filtered.length?filtered.map(s=>{
+ const applied=applications.some(a=>a.scholarshipId===s.id);
+ return `<article class="scholar-card"><div class="card-top"><div><h3>${esc(s.name)}</h3><div class="provider">${esc(s.provider)}</div></div><div class="amount">${money(s.amount)}</div></div><div class="details"><span class="pill">${esc(s.category)}</span><span>📅 Deadline: ${esc(s.deadline)}</span></div><div class="provider" style="margin-bottom:13px">${esc(s.eligibility||"Check the provider's official eligibility requirements.")}</div><div class="actions">${applied?'<span class="pill green">Application added</span>':`<button class="btn small" onclick="apply(${s.id})">Track application</button>`}<button class="btn secondary small" onclick="removeScholarship(${s.id})">Remove</button></div></article>`;
+ }).join(""):'<div class="empty">No scholarships match your search. Try another keyword or category.</div>';
+ document.getElementById("applicationList").innerHTML=applications.length?applications.map(a=>`<article class="scholar-card"><div class="card-top"><div><h3>${esc(a.name)}</h3><div class="provider">${esc(a.provider)} · ${money(a.amount)}</div></div><span class="pill ${a.status==="Approved"?"green":a.status==="Rejected"?"amber":""}">${esc(a.status)}</span></div><div class="details"><span>Deadline: ${esc(a.deadline)}</span></div><div class="actions"><label class="provider" for="status-${a.id}">Update status:</label><select id="status-${a.id}" onchange="updateStatus(${a.id},this.value)" style="padding:7px;border:1px solid #dce2ee;border-radius:8px"><option ${a.status==="Applied"?"selected":""}>Applied</option><option ${a.status==="Under review"?"selected":""}>Under review</option><option ${a.status==="Approved"?"selected":""}>Approved</option><option ${a.status==="Rejected"?"selected":""}>Rejected</option></select><button class="btn danger small" onclick="removeApplication(${a.id})">Remove</button></div></article>`).join(""):'<div class="empty">You have not added any applications yet. Choose “Track application” on a scholarship to get started.</div>';
+}
+function apply(id){if(applications.some(a=>a.scholarshipId===id))return;const s=scholarships.find(x=>x.id===id);if(!s)return;applications.push({...s,id:Date.now(),scholarshipId:id,status:"Applied"});save();render();toast("Scholarship added to your tracker.");}
+function updateStatus(id,status){const a=applications.find(x=>x.id===id);if(a){a.status=status;save();render();toast("Application status updated.");}}
+function removeApplication(id){applications=applications.filter(a=>a.id!==id);save();render();toast("Application removed.");}
+function removeScholarship(id){if(!confirm("Remove this scholarship from the list?"))return;scholarships=scholarships.filter(s=>s.id!==id);save();render();toast("Scholarship removed.");}
+document.getElementById("search").addEventListener("input",render);
+document.getElementById("category").addEventListener("change",render);
+document.getElementById("scholarshipForm").addEventListener("submit",e=>{
+ e.preventDefault();
+ const s={id:Date.now(),name:document.getElementById("name").value.trim(),provider:document.getElementById("provider").value.trim(),amount:Number(document.getElementById("amount").value),category:document.getElementById("categoryInput").value,deadline:document.getElementById("deadline").value,eligibility:document.getElementById("eligibility").value.trim()};
+ if(!s.name||!s.provider||!s.amount||!s.category||!s.deadline)return;
+ scholarships.unshift(s);save();e.target.reset();render();toast("New scholarship added.");
+});
+render();
+</script>
+</body>
+</html>
